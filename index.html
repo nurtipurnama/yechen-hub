@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Analysis Tool</title>
+    <!-- Favicon for different platforms -->
+    <link rel="icon" type="image/png" sizes="32x32" href="images/logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/logo.png">
+    <link rel="shortcut icon" type="image/png" href="images/logo.png">
+    <!-- Stylesheets -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container py-4">
+        <!-- Logo and Header Section -->
+        <div class="header-container mb-4">
+            <div class="logo-section">
+                <img src="images/logo.png" alt="Match Analysis Tool Logo" class="website-logo">
+            </div>
+            <div class="header-info">
+                <div class="current-time">UTC: <span id="currentTime">2025-06-03 17:09:36</span></div>
+                <div class="current-user">User: <span id="currentUser">nurtipurnama</span></div>
+            </div>
+        </div>
+
+        <!-- Chart View Selector -->
+        <div class="chart-selector-container mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-line"></i> Chart View Selection</h5>
+                </div>
+                <div class="card-body">
+                    <div class="btn-group w-100" role="group" aria-label="Chart view selection">
+                        <button type="button" class="btn btn-outline-primary active" data-view="head-to-head">Head to Head</button>
+                        <button type="button" class="btn btn-outline-primary" data-view="team1-opponent">Team 1 vs Opponent</button>
+                        <button type="button" class="btn btn-outline-primary" data-view="team2-opponent">Team 2 vs Opponent</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Analysis Section -->
+        <div class="analysis-container">
+            <!-- Total Score Analysis Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar"></i> Total Score Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <div class="betting-line-info">Current betting line: <span id="currentLine">0</span></div>
+                    <div id="total-score-chart"></div>
+                </div>
+            </div>
+
+            <!-- Team Performance Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-line"></i> Team Performance</h5>
+                </div>
+                <div class="card-body">
+                    <div id="team-performance-chart"></div>
+                </div>
+            </div>
+
+            <!-- Statistics Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-calculator"></i> Match Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div id="general-stats"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="win-rates"></div>
+                        </div>
+                    </div>
+                    <div id="prediction-section" class="mt-4"></div>
+                </div>
+            </div>
+
+            <!-- Betting Recommendation Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-star"></i> Betting Recommendation</h5>
+                </div>
+                <div class="card-body">
+                    <div id="betting-recommendation"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Modal -->
+    <div class="modal fade" id="dataInputModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Input Match Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Team Names Form -->
+                    <form id="team-form" class="mb-4">
+                        <h6 class="form-section-title">Team Names</h6>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Team 1</label>
+                                <input type="text" class="form-control" id="team1" placeholder="Enter Team 1 Name" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Team 2</label>
+                                <input type="text" class="form-control" id="team2" placeholder="Enter Team 2 Name" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Opponent</label>
+                                <input type="text" class="form-control" id="opponent" placeholder="Enter Opponent Name" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 mt-3">Set Team Names</button>
+                    </form>
+
+                    <!-- Betting Line Form -->
+                    <form id="betting-line-form" class="mb-4">
+                        <h6 class="form-section-title">Betting Line</h6>
+                        <div class="mb-3">
+                            <input type="number" class="form-control" id="betting-line" placeholder="Enter Betting Line" step="0.5" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Set Betting Line</button>
+                    </form>
+
+                    <!-- Match Scores Form -->
+                    <form id="match-form">
+                        <h6 class="form-section-title">Match Scores</h6>
+                        <div class="match-data-tabs mb-3">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#head-to-head-tab" type="button">Head to Head</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#team1-opponent-tab" type="button">Team 1 vs Opponent</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#team2-opponent-tab" type="button">Team 2 vs Opponent</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content mt-3">
+                                <div class="tab-pane fade show active" id="head-to-head-tab">
+                                    <div id="head-to-head-matches"></div>
+                                    <button type="button" class="btn btn-outline-secondary w-100 mb-2" id="add-head-to-head">
+                                        <i class="fas fa-plus"></i> Add Head to Head Match
+                                    </button>
+                                </div>
+                                <div class="tab-pane fade" id="team1-opponent-tab">
+                                    <div id="team1-opponent-matches"></div>
+                                    <button type="button" class="btn btn-outline-secondary w-100 mb-2" id="add-team1-opponent">
+                                        <i class="fas fa-plus"></i> Add Team 1 vs Opponent Match
+                                    </button>
+                                </div>
+                                <div class="tab-pane fade" id="team2-opponent-tab">
+                                    <div id="team2-opponent-matches"></div>
+                                    <button type="button" class="btn btn-outline-secondary w-100 mb-2" id="add-team2-opponent">
+                                        <i class="fas fa-plus"></i> Add Team 2 vs Opponent Match
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-info w-100">Analyze Data</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar fixed-bottom">
+        <div class="container-fluid justify-content-around">
+            <button class="nav-btn" id="resetBtn">
+                <i class="fas fa-redo"></i>
+                <span>Reset</span>
+            </button>
+            <button class="nav-btn" data-bs-toggle="modal" data-bs-target="#dataInputModal">
+                <i class="fas fa-edit"></i>
+                <span>Input</span>
+            </button>
+            <button class="nav-btn" id="downloadBtn">
+                <i class="fas fa-download"></i>
+                <span>Export</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
